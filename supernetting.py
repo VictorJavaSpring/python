@@ -1,0 +1,169 @@
+#!/usr/bin/python
+#-*- coding: utf-8-*-
+#
+# Autor: Victor Roig
+# Data: 16/03/2013
+# Versio:1
+# USAGE: rang_ip IPDECIMAL/MASCARA OCTAL 192.168.32.5/28
+# ENUNCIAT: programa que donada una IP en format decimal i la seva 
+#			MASCARA en format octal, i el numero de hosts necessaris mostri:
+# 	1-la CLASSE
+#	2-BITS DE hosts i de SUBNETTING 
+# 	3-ÉS UNA IP VÀLIDA? (MOSTRAR TIPUS)
+# 	-en format binari i decimal:
+#		4-IP ADREÇA DE XARXA,
+#		5-IP ADREÇA DE BROADCAST,
+#		6-la MASCARA,
+#		7-NUMERO DE HOSTS POSSIBLES PER XARXA EN FORMAT bits, POTENCIA Y NORMAL.
+# 		8-NUMERO DE SUBXARXES POSSIBLES (DETALLAT)
+#		9-RANG DE SUBXARXES.
+#		10-RANG DE IP HOSTS POSIBLES de la xarxa sencera
+#		
+######################################################################
+# 	P.e. :
+# 	supernetting 192.168.32.5/28
+#	
+#	CLASSE C.
+#	bits per hosts: 		/28 a /32 (4 bits per HOSTS)
+#	bits per subnetting:	/24 a /28 (4 BITS per SUBNETTING).
+#
+#	IP VALIDA:5é HOST DE LA XARXA Nº 1(la 1a).
+#	
+#	IP ADREÇA DE XARXA EN FORMAT BINARI: 
+#	1100 0000.1010 1000.0010 0000.0000 0000
+#	IP ADREÇA DE XARXA EN FORMAT DECIMAL: 
+#	192.168.32.0 /28
+#
+#	IP ADREÇA DE BROADCAST EN FORMAT BINARI: 
+#	1100 0000.1010 1000.0010 0000.0000 1111
+#	IP ADREÇA DE BROADCAST EN FORMAT DECIMAL: 
+#	192.168.32.15 /28
+#
+#	MASCARA EN FORMAT BINARI:
+#	11111111.11111111.11111111.11110000
+#	MASCARA EN FORMAT DECIMAL: 
+#	255.255.255.240
+#
+#	nº HOSTS POSSIBLES/XARXA:
+#	4 bits per hosts, 14 hosts/xarxa (2^4 - 2)
+#
+#	RANG DE IP HOSTS POSIBLES EN FORMAT DECIMAL-BINARI: 
+#
+#	DE primer host possible:
+#	1100 0000.1010 1000.0010 0000.0000 0001 192.168.32.1 /28
+#	A ultim host possible:
+#	1100 0000.1010 1000.0010 0000.0000 1110 192.168.32.14 /28
+#
+#	1100 0000.1010 1000.0010 0000. 0000 0000 192.168.32.0 /28 (xarxa)
+#
+#	1100 0000.1010 1000.0010 0000. 0000 0001 192.168.32.1 /28	1er host
+#	1100 0000.1010 1000.0010 0000. 0000 0010 192.168.32.2 /28	2
+#	1100 0000.1010 1000.0010 0000. 0000 0011 192.168.32.3 /28	3
+#	1100 0000.1010 1000.0010 0000. 0000 0100 192.168.32.4 /28	4
+#	1100 0000.1010 1000.0010 0000. 0000 0101 192.168.32.5 /28	5 *
+#	1100 0000.1010 1000.0010 0000. 0000 0110 192.168.32.6 /28	6
+#	1100 0000.1010 1000.0010 0000. 0000 0111 192.168.32.7 /28	7
+#	1100 0000.1010 1000.0010 0000. 0000 1000 192.168.32.8 /28	8
+#	1100 0000.1010 1000.0010 0000. 0000 1001 192.168.32.9 /28	9
+#	1100 0000.1010 1000.0010 0000. 0000 1010 192.168.32.10 /28	10
+#	1100 0000.1010 1000.0010 0000. 0000 1011 192.168.32.11 /28	11
+#	1100 0000.1010 1000.0010 0000. 0000 1100 192.168.32.12 /28	12
+#	1100 0000.1010 1000.0010 0000. 0000 1101 192.168.32.13 /28	13
+#	1100 0000.1010 1000.0010 0000. 0000 1110 192.168.32.14 /28	14 ultim
+#
+#	1100 0000.1010 1000.0010 0000. 0000 1111 192.168.32.15 /28 (b.c.)
+#
+#
+#	nº SUBXARXES POSSIBLES (DETALLAT) BASANT-SE EN LA CLASSE:
+#	4 bits per subxarxes, 16 subxarxes (2^4) 
+# 
+#	RANG DE SUBXARXES POSIBLES EN FORMAT DECIMAL-BINARI:
+#
+#	DE LA primera SUBXARXA:
+#	1100 0000.1010 1000.0010 0000.0000 0000 192.168.32.0 /28
+#	A la ultima SUBXARXA:
+#	1100 0000.1010 1000.0010 0000.1111 0000 192.168.32.240 /28
+#
+#	1100 0000.1010 1000.0010 0000. 0000 0000 192.168.32.0 /28	1era *
+#	1100 0000.1010 1000.0010 0000. 0001 0000 192.168.32.16 /28	2
+#	1100 0000.1010 1000.0010 0000. 0010 0000 192.168.32.32 /28	3
+#	1100 0000.1010 1000.0010 0000. 0011 0000 192.168.32.48 /28	4
+#	1100 0000.1010 1000.0010 0000. 0100 0000 192.168.32.64 /28	5
+#	1100 0000.1010 1000.0010 0000. 0101 0000 192.168.32.80 /28	6
+#	1100 0000.1010 1000.0010 0000. 0110 0000 192.168.32.96 /28	7
+#	1100 0000.1010 1000.0010 0000. 0111 0000 192.168.32.112 /28	8
+#	1100 0000.1010 1000.0010 0000. 1000 0000 192.168.32.128 /28	9
+#	1100 0000.1010 1000.0010 0000. 1001 0000 192.168.32.144 /28	10
+#	1100 0000.1010 1000.0010 0000. 1010 0000 192.168.32.160 /28	11
+#	1100 0000.1010 1000.0010 0000. 1011 0000 192.168.32.176 /28	12
+#	1100 0000.1010 1000.0010 0000. 1100 0000 192.168.32.192 /28	13
+#	1100 0000.1010 1000.0010 0000. 1101 0000 192.168.32.208 /28	14
+#	1100 0000.1010 1000.0010 0000. 1110 0000 192.168.32.224 /28	15
+#	1100 0000.1010 1000.0010 0000. 1111 0000 192.168.32.240 /28	16 ultima
+#
+######################################################################
+# ESPECIFICACIONS:
+# JOC DE PROVES:
+######################################################################
+# IMPORTS:
+import sys
+from modul_ip import *
+
+# Cos del programa:
+
+#################### 0. Llegir i validar entrada:
+
+# VALIDAR NUM ARGUMENTS = 2
+if len(sys.argv) != 2:
+	print "ERROR:numero d'arguments incorrecte"
+	print "USAGE: rang_ip IPDECIMAL/MASCARA OCTAL 192.168.32.5/28"
+	exit()
+
+# VALIDAR FORMAT Y VALIDESSA IP i MASCARA OCTAL
+
+	#
+	# obtenir la ipdecimal i la mascara ("$rang_ip 192.168.32.5/28")
+		# fer una llista amb la ipdecimal i la mascara
+llista_str=sys.argv[1].split("/")
+ipDecimal=llista_str[0]
+mascara=llista_str[1]
+
+	# VALIDAR LA IP : FER SERVIR LA FUNCIO validaIpdec(CADENA)
+if not validaIpdec(ipDecimal):
+	print "ERROR: IP incorrecte"
+	print "USAGE: rang_ip IPDECIMAL/MASCARA OCTAL 192.168.32.5/28"
+	exit()
+	
+	# VALIDAR LA MASCARA OCTAL: expandir
+if int(mascara) <= 0 or int(mascara) >= 32:
+	print "ERROR: MASCARA incorrecte"
+	print "USAGE: rang_ip IPDECIMAL/MASCARA OCTAL 192.168.32.5/28"
+	exit()
+	
+print ipDecimal,mascara
+
+
+################### 	1. la CLASSE
+
+# CALCULAR LA CLASSE i info--> fer servir les funcions:
+# classe_IPDec_detall() tipus_ip() i mascaraIpDec
+classe=classe_IPDec_detall(ipDecimal)
+tipus=tipus_ip(ipDecimal)
+mask=mascaraIpDec(ipDecimal)
+print str(classe[0]),str(classe[1]),tipus,mask
+
+################### 		2-BITS DE hosts i de SUBNETTING SI ESCAU, BASANT-SE EN LA CLASSE.
+
+
+################### 	 	3-ÉS UNA IP VÀLIDA? (MOSTRAR TIPUS)
+# 	-en format binari i decimal:
+#		4-IP ADREÇA DE XARXA,
+#		5-IP ADREÇA DE BROADCAST,
+#		6-la MASCARA,
+#		7-NUMERO DE HOSTS POSSIBLES PER XARXA EN FORMAT bits, POTENCIA Y NORMAL.
+# 		8-RANG DE IP HOSTS POSIBLES de la xarxa sencera
+#		9-NUMERO DE SUBXARXES POSSIBLES (DETALLAT) BASANT-SE EN 
+#		LA CLASSE DE LA IP EN FORMAT bits, POTENCIA Y NORMAL..
+# 		10-RANG DE SUBXARXES.
+
+################### 	 Printar sortides
